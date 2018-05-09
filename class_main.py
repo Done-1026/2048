@@ -1,34 +1,42 @@
 import tkinter as tk
+import tkinter.messagebox as tkm
 import gamefield
 
 
 class Root(tk.Tk):
 
-    _color = ['#FFFFFF','#FFFFE0','#FFFACD','#EEE8AA','#F0E68C','#FFFF00','#FFD700']
-    _num_color = dict(zip([0]+[2**i for i in range(1,7)],_color))
+    _color = ['#FFFFFF','#FFFFF0','#FFFFE0','#FFF8DC','#FFEBCD','#FFF68F','#FFEC8B','#FFFF00','#FFD700','FFC125','FFA500','FF7F24']
+    _num_color = dict(zip([0]+[2**i for i in range(1,12)],_color))
     def __init__(self,game):
         super().__init__()
         self.game = game
         self.game.make_number()
         self.title('2048')
-        self.geometry('200x300')
+        self.geometry('185x300')
 
-        self.chessboard = tk.Frame(self,bg='grey')
+        self.scoreboard = tk.Frame(self,bg='grey')
+        self.scoreboard.grid()
+                 
+        self.chessboard = tk.Frame(self)
         self.chessboard.grid()
         self.refresh_board()
-        
+                
         self.hand_shank = tk.Frame(self)
         self.hand_shank.grid()
         self.up = tk.Button(self.hand_shank,text='↑',width=4,height=1,
-                            command=self.move_up).grid(column=1,row=0)
+                            command=self.move_up).grid(column=1,row=0)        
         self.down = tk.Button(self.hand_shank,text='↓',width=4,height=1,
                               command=self.move_down).grid(column=1,row=1)
         self.left = tk.Button(self.hand_shank,text='←',width=4,height=1,
                               command=self.move_left).grid(column=0,row=1)
         self.right = tk.Button(self.hand_shank,text='→',width=4,height=1,
                                command=self.move_right).grid(column=2,row=1)
-        
-
+        self.restart = tk.Button(self.hand_shank,text='restart',width=6,height=1,
+                                 command=self.restart_button).grid(column=4,row=3)
+        self.quit = tk.Button(self.hand_shank,text='exit',width=6,height=1,
+                              command=self.quit_button).grid(column=4,row=4)
+        self.bind('<Key>',self.key_button)
+                
     def refresh_board(self):
         '''刷新棋盘'''
         for i in range(4):
@@ -40,27 +48,54 @@ class Root(tk.Tk):
                 num = tk.Label(self.chessboard,bg=self._num_color[self.game.field[i][j]],
                                fg=font_color,font=5,height=2,width=5,text=str(self.game.field[i][j]))
                 num.grid(row=i,column=j)
+        tk.Label(self.scoreboard,text='score: '+str(self.game.score)).grid(row=0)        
 
     def move(move_to):
-        '''棋盘动作'''
-        def move1(self):
+        '''装饰器:棋盘动作,判断胜负，增加数字，刷新棋盘'''
+        def move1(self,*argv):
             status = self.game.check_status()
             print(status)
             if status == 'go':
-                move_to(self)
-                self.game.make_number()
-                self.refresh_board()
+                if len(argv)==0 or argv[0].char in self.game.actions:
+                    move_to(self,*argv)
+                    self.game.make_number()
+                    self.refresh_board()
+            elif status == 'win':
+                tk.messagebox.askokcancel('info','you win!!',parent=self.chessboard)
+            else:
+                tk.messagebox.askokcancel('info','faild!!',parent=self.chessboard)               
         return move1
+    
+    def restart_button(self):
+        '''重玩，有提示'''
+        if tk.messagebox.askquestion('info','restart?')=='yes':
+            self.game.action_move('r')         
+            self.game.make_number()
+            self.refresh_board()
 
+    def quit_button(self):
+        '''关闭窗口，有提示'''
+        if tk.messagebox.askokcancel('info','quit?'):
+            self.destroy()
+    
+    @move
+    def key_button(self,event):
+        '''绑定键盘,wsadr'''
+        if event.char in self.game.actions.keys():
+            self.game.action_move(event.char)
+            
     @move
     def move_up(self):
         self.game.up_ac(self.game.field)
+        
     @move
     def move_down(self):
         self.game.down_ac(self.game.field)
+        
     @move
     def move_left(self):
         self.game.left_ac(self.game.field)
+        
     @move
     def move_right(self):
         self.game.right_ac(self.game.field)

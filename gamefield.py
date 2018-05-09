@@ -1,7 +1,4 @@
 import random
-import curses
-
-#field = [[0 for i in range(4)] for j in range(4)]
 
 class GameField():
     def __init__(self,win=2048):
@@ -25,18 +22,6 @@ class GameField():
         except:
             pass
         
-        '''            
-        _count = 0
-        while True:
-            if _count < count:
-                i = random.randint(0,3)
-                j = random.randint(0,3)
-                if self.field[i][j] == 0:
-                    _count += 1
-                    self.field[i][j] = random.choices([2,4],weights=[9,1],k=1)[0]  #在随机空白处生成2，4数字
-            else:
-                break
-        '''
     def align(self,row):
         '''左对齐每一行'''
         for i in range(3):
@@ -93,7 +78,7 @@ class GameField():
         '''向下'''
         self.right_ac(field)
 
-    def action_move(self,action):                    
+    def action_move(self,action):
         if self.actions[action] == 'left':
             self.left_ac(self.field)
         elif self.actions[action] == 'right':
@@ -105,8 +90,6 @@ class GameField():
         elif self.actions[action] == 'restart':
             self.score = 0
             self.field = [[0 for i in range(4)] for j in range(4)]
-        else:
-            print('enter error!please try again.')
 
     def check_over(self,field):
         game_status = 'over'
@@ -136,7 +119,7 @@ class GameField():
         print('score',self.score)
 
      
-            
+'''            
 def main():
     while True:    
         try:
@@ -172,7 +155,7 @@ if __name__ == '__main__':
     game = GameField()
     main()
 
-        
+'''        
     
 
             
