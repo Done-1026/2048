@@ -13,14 +13,21 @@ class Root(tk.Tk):
         self.game.make_number()
         self.title('2048')
         self.geometry('185x300')
-
+        self.labels = [[] for i in range(4)]
+        
+        #记分区
         self.scoreboard = tk.Frame(self,bg='grey')
         self.scoreboard.grid()
-                 
+        self.score = tk.Label(self.scoreboard,text='score: '+str(self.game.score))
+        self.score.grid(row=0) 
+
+        #数字显示区         
         self.chessboard = tk.Frame(self)
         self.chessboard.grid()
+        self.init_board()
         self.refresh_board()
-                
+
+        #按键区        
         self.hand_shank = tk.Frame(self)
         self.hand_shank.grid()
         self.up = tk.Button(self.hand_shank,text='↑',width=4,height=1,
@@ -35,8 +42,17 @@ class Root(tk.Tk):
                                  command=self.restart_button).grid(column=4,row=3)
         self.quit = tk.Button(self.hand_shank,text='exit',width=6,height=1,
                               command=self.quit_button).grid(column=4,row=4)
+        #绑定键盘
         self.bind('<Key>',self.key_button)
-                
+
+    def init_board(self):
+        for i in range(4):
+            for j in range(4):
+                num = tk.Label(self.chessboard,bg=self._num_color[self.game.field[i][j]],
+                               font=5,height=2,width=5,text=str(self.game.field[i][j]))
+                num.grid(row=i,column=j)
+                self.labels[i].append(num)
+                              
     def refresh_board(self):
         '''刷新棋盘'''
         for i in range(4):
@@ -45,11 +61,11 @@ class Root(tk.Tk):
                     font_color = '#FFFFFF'
                 else:
                     font_color = '#000000'
-                num = tk.Label(self.chessboard,bg=self._num_color[self.game.field[i][j]],
-                               fg=font_color,font=5,height=2,width=5,text=str(self.game.field[i][j]))
-                num.grid(row=i,column=j)
-        tk.Label(self.scoreboard,text='score: '+str(self.game.score)).grid(row=0)        
-
+                self.labels[i][j]['text'] = str(self.game.field[i][j])
+                self.labels[i][j]['fg'] = font_color
+                self.labels[i][j]['bg'] = self._num_color[self.game.field[i][j]]
+        self.score['text'] = 'score: '+str(self.game.score)
+               
     def move(move_to):
         '''装饰器:棋盘动作,判断胜负，增加数字，刷新棋盘'''
         def move1(self,*argv):

@@ -10,7 +10,7 @@ class GameField():
         self.max = 0
              
     def make_number(self):
-        '''在为0处生成2个随机数字'''
+        '''在为0处生成1个随机数字'''
         _zero = []
         for i in range(4):
             for j in range(4):
@@ -79,6 +79,7 @@ class GameField():
         self.right_ac(field)
 
     def action_move(self,action):
+        '''执行动作'''
         if self.actions[action] == 'left':
             self.left_ac(self.field)
         elif self.actions[action] == 'right':
@@ -92,6 +93,7 @@ class GameField():
             self.field = [[0 for i in range(4)] for j in range(4)]
 
     def check_over(self,field):
+        '''判断游戏是否结束'''
         game_status = 'over'
         for i in range(4):
             if 0 in field[i]:
@@ -106,11 +108,13 @@ class GameField():
         return game_status
     
     def check_status(self):
+        '''判断游戏状态，win,over,go'''
         if self.max == self.win:
             return 'win'
         else:
             return self.check_over(self.field)
-                
+        
+'''                
     def field_display(self):
         for i in self.field:
             for j in i:
@@ -119,7 +123,7 @@ class GameField():
         print('score',self.score)
 
      
-'''            
+            
 def main():
     while True:    
         try:
