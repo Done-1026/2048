@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.messagebox as tkm
 import shelve
 import gamefield
 
@@ -77,28 +78,28 @@ class Root(tk.Tk):
                     self.game.make_number()
                     self.refresh_board()
             elif status == 'win':
-                tk.messagebox.askokcancel('info','you win!!',parent=self.chessboard)
+                tkm.askokcancel('info','you win!!',parent=self.chessboard)
             else:
-                tk.messagebox.askokcancel('info','faild!!',parent=self.chessboard)               
+                tkm.askokcancel('info','faild!!',parent=self.chessboard)               
         return move1
     
     def restart_button(self):
         '''重玩，有提示'''
-        if tk.messagebox.askquestion('info','restart?')=='yes':
+        if tkm.askquestion('info','restart?')=='yes':
             self.game.action_move('r')         
             self.game.make_number()
             self.refresh_board()
 
     def quit_button(self):
         '''关闭窗口，有提示'''
-        if tk.messagebox.askokcancel('info','quit?'):
+        if tkm.askokcancel('info','quit?'):
             self.destroy()
 
     def clearscore(self):
-        self.game.info['highscore'] = self.game.highscore = 0
-        self.score['text'] = 'score: '+ str(self.game.score)+'   high: ' +str(self.game.highscore)
+        if tkm.askquestion('info','clear the highscore?') == 'yes':
+            self.game.info['highscore'] = self.game.highscore = 0
+            self.score['text'] = 'score: '+ str(self.game.score)+'   high: ' +str(self.game.highscore)
         
-    
     @move
     def key_button(self,event):
         '''绑定键盘,wsadr'''
