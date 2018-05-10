@@ -1,4 +1,6 @@
 import random
+import shelve
+
 
 class GameField():
     def __init__(self,win=2048):
@@ -8,7 +10,15 @@ class GameField():
         self.score = 0
         self.win = win
         self.max = 0
-             
+        self.info = shelve.open('info')
+        self.get_highscore()
+        
+    def get_highscore(self):
+        try:
+            self.highscore = self.info['highscore']
+        except:
+            self.highscore = self.info['highscore'] = 0
+                         
     def make_number(self):
         '''在为0处生成1个随机数字'''
         _zero = []
@@ -36,6 +46,8 @@ class GameField():
                 row[i] *= 2
                 row[i+1]=0
                 self.score += row[i]
+                if self.score > self.highscore:
+                    self.info['highscore'] = self.highscore = self.score                    
                 if self.max < row[i]:
                     self.max = row[i]
     

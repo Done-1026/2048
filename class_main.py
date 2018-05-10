@@ -1,10 +1,8 @@
 import tkinter as tk
-import tkinter.messagebox as tkm
+import shelve
 import gamefield
 
-
 class Root(tk.Tk):
-
     _color = ['#FFFFFF','#FFFFF0','#FFFFE0','#FFF8DC','#FFEBCD','#FFF68F','#FFEC8B','#FFFF00','#FFD700','FFC125','FFA500','FF7F24']
     _num_color = dict(zip([0]+[2**i for i in range(1,12)],_color))
     def __init__(self,game):
@@ -12,13 +10,13 @@ class Root(tk.Tk):
         self.game = game
         self.game.make_number()
         self.title('2048')
-        self.geometry('185x300')
+        self.geometry('185x400')
         self.labels = [[] for i in range(4)]
         
         #记分区
         self.scoreboard = tk.Frame(self,bg='grey')
         self.scoreboard.grid()
-        self.score = tk.Label(self.scoreboard,text='score: '+str(self.game.score))
+        self.score = tk.Label(self.scoreboard,text='score: '+str(self.game.score) +'   highscore' +str(self.game.highscore))
         self.score.grid(row=0) 
 
         #数字显示区         
@@ -42,6 +40,8 @@ class Root(tk.Tk):
                                  command=self.restart_button).grid(column=4,row=3)
         self.quit = tk.Button(self.hand_shank,text='exit',width=6,height=1,
                               command=self.quit_button).grid(column=4,row=4)
+        self.clearscore = tk.Button(self.hand_shank,text='clearscore',width=10,height=1,
+                                    command=self.clearscore).grid(column=4,row=5)
         #绑定键盘
         self.bind('<Key>',self.key_button)
 
@@ -64,7 +64,7 @@ class Root(tk.Tk):
                 self.labels[i][j]['text'] = str(self.game.field[i][j])
                 self.labels[i][j]['fg'] = font_color
                 self.labels[i][j]['bg'] = self._num_color[self.game.field[i][j]]
-        self.score['text'] = 'score: '+str(self.game.score)
+        self.score['text'] = 'score: '+ str(self.game.score)+'   high: ' +str(self.game.highscore)
                
     def move(move_to):
         '''装饰器:棋盘动作,判断胜负，增加数字，刷新棋盘'''
@@ -93,6 +93,11 @@ class Root(tk.Tk):
         '''关闭窗口，有提示'''
         if tk.messagebox.askokcancel('info','quit?'):
             self.destroy()
+
+    def clearscore(self):
+        self.game.info['highscore'] = self.game.highscore = 0
+        self.score['text'] = 'score: '+ str(self.game.score)+'   high: ' +str(self.game.highscore)
+        
     
     @move
     def key_button(self,event):
@@ -120,4 +125,5 @@ if __name__ == '__main__':
     game = gamefield.GameField()
     root = Root(game)
     root.mainloop()
+    game.info.close()
         
